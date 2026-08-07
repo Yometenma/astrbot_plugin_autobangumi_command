@@ -2,7 +2,7 @@ name: astrbot_plugin_autobangumi_command
 display_name: AutoBangumi 遥控器
 short_desc: 通过聊天命令操控 AutoBangumi：搜索、订阅、管理追番
 desc: 在 QQ/Telegram/微信等平台通过聊天命令远程操控 AutoBangumi，支持搜索番剧、添加 RSS 订阅、查看订阅列表、删除订阅等功能。
-version: 1.0.0
+version: 1.0.1
 author: yometenma
 repo: https://github.com/Yometenma/astrbot_plugin_autobangumi_command
 astrbot_version: ">=4.27.2"
