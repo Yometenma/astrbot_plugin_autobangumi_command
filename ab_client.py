@@ -75,12 +75,28 @@ class ABCLient:
         return await self._request("DELETE", f"/api/v1/rss/delete/{rss_id}")
 
     async def search(self, keywords: str) -> list[dict]:
-        """搜索番剧。"""
-        result = await self._request("GET", "/api/v1/search/bangumi", params={
-            "site": "mikan",
-            "keywords": keywords,
-        })
-        return result if isinstance(result, list) else []
+        """搜索番剧（解析 SSE 流）。"""
+        import json as _json
+        await self._ensure_auth()
+        session = await self._get_session()
+        url = f"{self.base_url}/api/v1/search/bangumi?site=mikan&keywords={keywords}"
+        headers = {"Authorization": f"Bearer {self._token}"}
+        results = []
+        async with session.get(url, headers=headers) as resp:
+            if resp.status == 401:
+                self._token = None
+                return await self.search(keywords)
+            if resp.status != 200:
+                return []
+            async for line in resp.content:
+                text = line.decode("utf-8", errors="ignore").strip()
+                if text.startswith("data: "):
+                    try:
+                        data = _json.loads(text[6:])
+                        results.append(data)
+                    except _json.JSONDecodeError:
+                        continue
+        return results
 
     async def close(self) -> None:
         if self._session:
