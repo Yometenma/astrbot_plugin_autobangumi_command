@@ -11,13 +11,23 @@
 [![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.27.2-orange.svg)](https://github.com/AstrBotDevs/AstrBot)
 [![AutoBangumi](https://img.shields.io/badge/AutoBangumi-required-red.svg)](https://github.com/EstrellaXD/Auto_Bangumi)
 
-[命令](#命令) · [快速开始](#快速开始) · [配置](#配置) · [架构](#架构) · [排障](#常见问题)
+[功能](#功能) · [命令](#命令) · [快速开始](#快速开始) · [配置](#配置) · [架构](#架构) · [测试](#测试) · [排障](#常见问题)
 
 </div>
 
 ---
 
-> **前置依赖**：本插件是 [AstrBot](https://github.com/AstrBotDevs/AstrBot) 的插件，需要配合 [AutoBangumi](https://github.com/EstrellaXD/Auto_Bangumi) 使用。请确保 AutoBangumi 已部署并可访问。
+> **前置依赖**：本插件是 [AstrBot](https://github.com/AstrBotDevs/AstrBot) 的插件，需要配合 [AutoBangumi](https://github.com/EstrellaXD/Auto_Bangumi) 使用。插件通过 AutoBangumi 的 REST API 进行操控，请确保 AutoBangumi 已部署且 API 端口（默认 7892）可被 AstrBot 访问。
+
+## 功能
+
+| 功能 | 说明 |
+|------|------|
+| 🔍 搜索番剧 | `/search` 在 Mikan 搜索番剧，返回匹配结果 |
+| ➕ 添加订阅 | `/sub` 一键添加 Mikan RSS 订阅，即刻开始追番 |
+| 📋 订阅列表 | `/list` 查看当前所有订阅，含 ID、名称、启用状态 |
+| 🗑 删除订阅 | `/delete` 按 ID 删除，不追了随时停 |
+| 🔐 自动认证 | OAuth2 自动登录，Token 过期自动刷新，无需手动管理 |
 
 ## 命令
 
@@ -25,15 +35,15 @@
 |------|------|------|
 | `/search` | `/search 鬼灭之刃` | 在 Mikan 搜索番剧，返回前 10 条结果 |
 | `/sub` | `/sub <Mikan RSS URL>` | 添加 RSS 订阅，自动开始追番 |
-| `/list` | `/list` | 查看当前所有订阅，含 ID 和状态 |
+| `/list` | `/list` | 查看当前所有订阅，含 ID 和启用状态 |
 | `/delete` | `/delete <ID>` | 删除指定 ID 的订阅 |
 
 典型使用流程：
 
 ```
 /search 芙莉莲                              ← 先搜番
-/sub https://mikanani.me/RSS/...             ← 找到后复制 RSS 地址订阅
-/list                                        ← 查看已订阅
+/sub https://mikanani.me/RSS/...             ← 复制 RSS 地址订阅
+/list                                        ← 确认已添加
 /delete 3                                    ← 不追了？删掉
 ```
 
@@ -59,11 +69,13 @@
 | `ab_username` | `admin` | AutoBangumi 登录用户名 |
 | `ab_password` | 空 | AutoBangumi 登录密码 |
 
-填好密码保存，插件会自动登录并获取 Token。
+填好密码保存，插件启动时会自动登录获取 Token。
 
-### 3. 使用
+> **注意**：如果 AstrBot 和 AutoBangumi 在同一台 Docker 宿主机上，`127.0.0.1` 指向的是各自容器内部，需要用宿主机 IP 或容器名。
 
-在聊天中发送命令即可。插件连接 AutoBangumi 成功后会打印日志，失败则会在首次命令调用时报错。
+### 3. AutoBangumi 侧确认
+
+无需额外配置——只要 AutoBangumi 正常运行且 API 端口可访问即可。可在浏览器访问 `http://<IP>:7892` 验证。
 
 ## 配置
 
@@ -73,7 +85,7 @@
 | `ab_username` | string | `admin` | 登录用户名 |
 | `ab_password` | string | 空 | 登录密码 |
 
-> AutoBangumi 默认端口为 7892。如果 AstrBot 和 AutoBangumi 在同一台 Docker 宿主机上，可能需要用宿主机 IP 而非 `127.0.0.1`。
+> Token 由插件自动管理——登录成功后缓存，401 时自动重新登录刷新。
 
 ## 架构
 
@@ -81,11 +93,12 @@
 
 ```mermaid
 flowchart LR
-    User[用户发命令<br/>/search or /sub] --> Cmd[命令处理]
-    Cmd --> Auth{Auth?}
-    Auth -->|无Token| Login[POST /api/v1/auth/login<br/>OAuth2 登录]
+    User[用户发命令] --> Cmd[命令处理]
+    Cmd --> Client[ABClient]
+    Client --> Auth{有Token?}
+    Auth -->|无/过期| Login[POST /api/v1/auth/login]
     Login --> Auth
-    Auth -->|有Token| API[调用 AutoBangumi API]
+    Auth -->|有效| API[调用 AutoBangumi API]
     API --> AB[AutoBangumi 后端]
     AB --> Reply[返回结果]
     Reply --> User
@@ -93,28 +106,57 @@ flowchart LR
 
 ### 模块结构
 
-| 模块 | 职责 |
-|------|------|
-| `main.py` | 插件入口，4 个命令处理器 |
-| `ab_client.py` | AutoBangumi REST API 客户端，OAuth2 认证 + auto-refresh |
+```mermaid
+flowchart TB
+    Main[main.py<br/>插件入口 & 4 个命令]
+    Client[ab_client.py<br/>API 客户端<br/>OAuth2 认证 & 自动刷新]
+
+    Main --> Client
+    Client --> Search[GET /api/v1/search/bangumi]
+    Client --> RSS[GET/POST/DELETE /api/v1/rss]
+```
+
+## 测试
+
+### 连接测试
+
+启动插件后查看 AstrBot 日志，应看到：
+
+```
+已连接 AutoBangumi: http://192.168.1.20:7892
+```
+
+若看到连接失败，检查 `ab_url` 和账号密码。
+
+### 命令测试
+
+在聊天中发送：
+
+```
+/search 测试
+/list
+```
+
+搜索应返回结果，列表应显示当前订阅（可能为空）。
 
 ## 常见问题
 
 ### 连接失败 / 认证失败
 
-1. 检查 `ab_url` 是否正确——AstrBot 能否 ping 到 AutoBangumi
-2. 确认用户名密码正确——可在浏览器访问 `http://<IP>:7892` 用同账号登录验证
-3. 看 AstrBot 日志确认具体错误信息
+1. 检查 `ab_url`——能否在浏览器访问 `http://<IP>:7892`
+2. 确认用户名密码正确——用同账号登录 WebUI 验证
+3. Docker 环境确认网络互通（`127.0.0.1` 指向容器自身，不是宿主机）
+4. 查看 AstrBot 日志确认具体错误
 
 ### 搜索无结果
 
-- AutoBangumi 的搜索基于 Mikan Project，确保 Mikan 可访问
-- 尝试用更简短的关键词，或用日文名
+- AutoBangumi 搜索基于 Mikan Project，确保 Mikan 可访问
+- 尝试更简短的关键词，或用日文名
 
 ### 添加 RSS 失败
 
-- 确认 URL 是完整的 Mikan RSS 地址，类似 `https://mikanani.me/RSS/MyBangumi/...`
-- 确认该 RSS 没有被重复添加
+- 确认 URL 是完整的 Mikan RSS 地址（`https://mikanani.me/RSS/...`）
+- 确认没有被重复添加
 
 ---
 
