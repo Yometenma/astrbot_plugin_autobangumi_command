@@ -13,10 +13,9 @@ AutoBangumi 遥控插件 — 通过聊天命令操控 AutoBangumi
 """
 
 from astrbot.api.event import filter, AstrMessageEvent
-from astrbot.api.message_components import Plain
 from astrbot.api.star import Context, Star, register
 
-from .ab_client import ABCLient
+from .ab_client import ABClient
 
 __version__ = "1.0.0"
 
@@ -35,10 +34,10 @@ class AutoBangumiCommandPlugin(Star):
         self.ab_url = str(config.get("ab_url", "http://127.0.0.1:7892"))
         self.ab_username = str(config.get("ab_username", "admin"))
         self.ab_password = str(config.get("ab_password", ""))
-        self._client: ABCLient | None = None
+        self._client: ABClient | None = None
 
     async def initialize(self) -> None:
-        self._client = ABCLient(self.ab_url, self.ab_username, self.ab_password)
+        self._client = ABClient(self.ab_url, self.ab_username, self.ab_password)
         try:
             await self._client._ensure_auth()
             self.logger.info(f"已连接 AutoBangumi: {self.ab_url}")
@@ -114,7 +113,12 @@ class AutoBangumiCommandPlugin(Star):
             yield event.plain_result("用法: /delete <订阅ID>（ID 可通过 /list 查看）")
             return
         try:
-            result = await self._client.delete_rss(int(rss_id))
+            rss_id_int = int(rss_id)
+        except ValueError:
+            yield event.plain_result(f"无效的 ID：「{rss_id}」，请输入数字（可通过 /list 查看）")
+            return
+        try:
+            result = await self._client.delete_rss(rss_id_int)
             msg = result.get("msg_zh", result.get("msg_en", "已删除"))
             yield event.plain_result(f"✅ {msg}")
         except Exception as e:

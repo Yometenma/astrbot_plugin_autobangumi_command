@@ -1,5 +1,6 @@
 """AutoBangumi HTTP API 客户端。"""
 
+import json as _json
 import logging
 from typing import Optional
 
@@ -8,7 +9,7 @@ import aiohttp
 logger = logging.getLogger(__name__)
 
 
-class ABCLient:
+class ABClient:
     """AutoBangumi REST API 客户端。"""
 
     def __init__(self, base_url: str, username: str, password: str):
@@ -54,7 +55,9 @@ class ABCLient:
                 return await self._request(method, path, **kwargs)
             if resp.status >= 400:
                 text = await resp.text()
-                raise RuntimeError(f"API 错误 [{method} {path}]: {resp.status} {text[:200]}")
+                raise RuntimeError(
+                    f"API 错误 [{method} {path}]: {resp.status} {text[:200]}"
+                )
             return await resp.json()
 
     async def list_rss(self) -> list[dict]:
@@ -76,7 +79,6 @@ class ABCLient:
 
     async def search(self, keywords: str) -> list[dict]:
         """搜索番剧（解析 SSE 流）。"""
-        import json as _json
         await self._ensure_auth()
         session = await self._get_session()
         url = f"{self.base_url}/api/v1/search/bangumi?site=mikan&keywords={keywords}"
@@ -88,12 +90,15 @@ class ABCLient:
                 return await self.search(keywords)
             if resp.status != 200:
                 return []
-            async for line in resp.content:
+            # SSE 格式：每行 "data: <json>"，按行读取
+            while True:
+                line = await resp.content.readline()
+                if not line:
+                    break
                 text = line.decode("utf-8", errors="ignore").strip()
-                if text.startswith("data: "):
+                if text.startswith("data: ") and len(text) > 6:
                     try:
-                        data = _json.loads(text[6:])
-                        results.append(data)
+                        results.append(_json.loads(text[6:]))
                     except _json.JSONDecodeError:
                         continue
         return results
