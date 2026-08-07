@@ -28,6 +28,7 @@
 | 📋 订阅列表 | `/list` 查看当前所有订阅，含 ID、名称、启用状态 |
 | 🗑 删除订阅 | `/delete` 按 ID 删除，不追了随时停 |
 | 🔐 自动认证 | OAuth2 自动登录，Token 过期自动刷新，无需手动管理 |
+| 🎭 人格回复 | 所有命令回复经 LLM 以 AstrBot 自身人格转述，也可关闭用原文 |
 
 ## 命令
 
@@ -84,6 +85,7 @@
 | `ab_url` | string | `http://127.0.0.1:7892` | AutoBangumi 地址，不含尾部斜杠 |
 | `ab_username` | string | `admin` | 登录用户名 |
 | `ab_password` | string | 空 | 登录密码 |
+| `use_llm` | bool | `true` | 是否用 LLM 以机器人口吻回复。关掉则返回原始文本 |
 
 > Token 由插件自动管理——登录成功后缓存，401 时自动重新登录刷新。
 

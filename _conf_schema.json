@@ -17,5 +17,11 @@
     "type": "string",
     "default": "",
     "hint": "登录 AutoBangumi 的密码"
+  },
+  "use_llm": {
+    "description": "是否用 LLM 以机器人口吻回复",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后所有命令回复都经过 LLM 转述，以 AstrBot 自身人格表达；关闭则直接返回原始文本"
   }
 }
