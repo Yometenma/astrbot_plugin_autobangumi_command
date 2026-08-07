@@ -43,7 +43,7 @@
 
 ```
 /search 芙莉莲                              ← 先搜番
-/sub https://mikanani.me/RSS/...             ← 复制 RSS 地址订阅
+/sub https://mikanani.me/RSS/... 鬼灭之刃    ← URL + 名称
 /list                                        ← 确认已添加
 /delete 3                                    ← 不追了？删掉
 ```
