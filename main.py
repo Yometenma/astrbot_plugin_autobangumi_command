@@ -96,10 +96,14 @@ class AutoBangumiCommandPlugin(Star):
     @filter.command("sub")
     async def cmd_subscribe(self, event: AstrMessageEvent, url: str = ""):
         if not url:
-            yield event.plain_result("用法: /sub <Mikan RSS URL>")
+            yield event.plain_result("用法: /sub <Mikan RSS URL> [名称]")
             return
+        # 解析 URL 和可选名称
+        parts = url.split(None, 1)
+        rss_url = parts[0]
+        name = parts[1].strip() if len(parts) > 1 else ""
         try:
-            result = await self._client.add_rss(url)
+            result = await self._client.add_rss(rss_url, name=name)
             msg = result.get("msg_zh", result.get("msg_en", "已添加"))
             yield event.plain_result(await self._reply(f"RSS 订阅结果: {msg}"))
         except Exception as e:
