@@ -1,0 +1,2 @@
+# 本插件依赖 aiohttp（AstrBot 环境通常已安装）
+aiohttp>=3.8

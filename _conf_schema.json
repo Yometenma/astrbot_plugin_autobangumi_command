@@ -1,0 +1,21 @@
+{
+  "ab_url": {
+    "description": "AutoBangumi 地址",
+    "type": "string",
+    "default": "http://127.0.0.1:7892",
+    "hint": "AutoBangumi WebUI 的访问地址，如 http://192.168.1.20:7892",
+    "obvious_hint": true
+  },
+  "ab_username": {
+    "description": "AutoBangumi 用户名",
+    "type": "string",
+    "default": "admin",
+    "hint": "登录 AutoBangumi 的用户名"
+  },
+  "ab_password": {
+    "description": "AutoBangumi 密码",
+    "type": "string",
+    "default": "",
+    "hint": "登录 AutoBangumi 的密码"
+  }
+}
