@@ -35,7 +35,7 @@
 | 命令 | 用法 | 说明 |
 |------|------|------|
 | `/search` | `/search 鬼灭之刃` | 在 Mikan 搜索番剧，返回前 10 条结果 |
-|  `/sub <url> [名称]`|  `/sub <Mikan URL> [名称]` | 添加 RSS 订阅，自动开始追番 |
+|  `/sub <url> [名称]`|  `/sub <Mikan URL> [名称]` | 添加 RSS 订阅。筛选、正则等详细配置需在 AutoBangumi WebUI 完成 |
 | `/list` | `/list` | 查看当前所有订阅，含 ID 和启用状态 |
 | `/delete` | `/delete <ID>` | 删除指定 ID 的订阅 |
 
