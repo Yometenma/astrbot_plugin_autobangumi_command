@@ -122,10 +122,11 @@ flowchart LR
 
 | 插件 | 说明 |
 |------|------|
+| [AutoBangumi](https://github.com/EstrellaXD/Auto_Bangumi) | 全自动追番工具，本插件通过其 API 操控 |
 | [astrbot_plugin_autobangumi_notify](https://github.com/Yometenma/astrbot_plugin_autobangumi_notify) | **通知转发**——新番更新自动推送到聊天 |
-| **本插件** | **遥控管理**——聊天命令搜索、订阅、删除番剧 |
+| [NapCat](https://github.com/NapNeko/NapCatQQ) | QQ 机器人框架，与 AstrBot 搭配使用 |
 
-两者配合：遥控器负责「加追什么」，通知负责「告诉你更新了」。
+三者配合：遥控器负责「加追什么」，通知负责「告诉你更新了」，AutoBangumi 在后台默默干活。
 
 ## 许可
 
