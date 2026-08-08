@@ -9,7 +9,7 @@ AutoBangumi 遥控插件 — 通过聊天命令操控 AutoBangumi
     /delete <ID>        删除订阅
 
 作者：yometenma
-版本：1.0.1
+版本：1.0.2
 """
 
 from astrbot.api.event import filter, AstrMessageEvent
@@ -17,7 +17,7 @@ from astrbot.api.star import Context, Star, register
 
 from .ab_client import ABClient
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 # LLM 转述任务指令
 REPLY_TASK = "请用你的口吻回复这条消息。保持信息准确，语气自然。"
