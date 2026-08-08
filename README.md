@@ -7,6 +7,8 @@
 在 QQ / Telegram / 微信里发命令，直接操控 AutoBangumi 搜索番剧、订阅 RSS、管理追番
 
 [![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)]()
+
+![Moe Counter](https://moe-counter.glitch.me/get/@Yometenma_astrbot_plugin_autobangumi_command)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.27.2-orange.svg)](https://github.com/AstrBotDevs/AstrBot)
 [![AutoBangumi](https://img.shields.io/badge/AutoBangumi-required-red.svg)](https://github.com/EstrellaXD/Auto_Bangumi)
