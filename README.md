@@ -8,7 +8,6 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)]()
 
-![Moe Counter](https://count.getloli.com/get/@Yometenma_astrbot_plugin_autobangumi_command)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.27.2-orange.svg)](https://github.com/AstrBotDevs/AstrBot)
 [![AutoBangumi](https://img.shields.io/badge/AutoBangumi-required-red.svg)](https://github.com/EstrellaXD/Auto_Bangumi)
