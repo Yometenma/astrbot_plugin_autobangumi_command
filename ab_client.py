@@ -81,10 +81,12 @@ class ABClient:
         """搜索番剧（解析 SSE 流）。"""
         await self._ensure_auth()
         session = await self._get_session()
-        url = f"{self.base_url}/api/v1/search/bangumi?site=mikan&keywords={keywords}"
+        url = f"{self.base_url}/api/v1/search/bangumi"
         headers = {"Authorization": f"Bearer {self._token}"}
         results = []
-        async with session.get(url, headers=headers) as resp:
+        async with session.get(url, headers=headers, params={
+            "site": "mikan", "keywords": keywords,
+        }) as resp:
             if resp.status == 401:
                 self._token = None
                 return await self.search(keywords)
